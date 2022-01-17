@@ -70,13 +70,13 @@ class _MyAppState extends State<MyApp> {
           CropAspectRatioPreset.ratio7x5,
           CropAspectRatioPreset.ratio16x9
         ],
-        androidUiSettings: AndroidUiSettings(
+        androidUiSettings: const AndroidUiSettings(
             toolbarTitle: 'Cropper',
             toolbarColor: Colors.deepOrange,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false),
-        iosUiSettings: IOSUiSettings(
+        iosUiSettings: const IOSUiSettings(
           title: 'Cropper',
         ));
     if (croppedFile != null) {
@@ -188,7 +188,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future MY_MODEL(File image) async {
-    int startTime = DateTime.now().millisecondsSinceEpoch;
     List? recognitions = await Tflite.runModelOnImage(
       path: image.path,
       numResults: 1,
@@ -200,8 +199,6 @@ class _MyAppState extends State<MyApp> {
       _confidence = recognitions[0]['confidence'].toString();
 
     });
-    int endTime = DateTime.now().millisecondsSinceEpoch;
-    print("Inference took ${endTime - startTime}ms");
   }
 
   onSelect(model) async {
