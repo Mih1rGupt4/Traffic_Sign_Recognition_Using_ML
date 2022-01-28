@@ -7,19 +7,12 @@ import 'package:tflite/tflite.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-import 'notification_service.dart';
-
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
-  await NotificationService().init();
   runApp(App());
 }
 
-const String pcmodel = "pcmodel";
+const String my_model = "mymodel";
 
 class App extends StatelessWidget {
   @override
@@ -48,7 +41,7 @@ class _MyAppState extends State<MyApp> {
 
   File? _image;
   List? _recognitions;
-  String _model = pcmodel;
+  String _model = my_model;
   double? _imageHeight;
   double? _imageWidth;
   bool _busy = false;
@@ -69,7 +62,7 @@ class _MyAppState extends State<MyApp> {
       _isButtonDisabled = true;
     });
   }
-  
+
   Future predictGalleryImage() async {
     XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 200, maxHeight: 200);
     File imageFile = File(image!.path);
@@ -82,7 +75,7 @@ class _MyAppState extends State<MyApp> {
       camera_state = AppState.free;
     });
   }
-  
+
   Future predictCameraImage() async {
     XFile? image = await ImagePicker().pickImage(source: ImageSource.camera, maxWidth: 200, maxHeight: 200);
     File imageFile = File(image!.path);
@@ -103,7 +96,6 @@ class _MyAppState extends State<MyApp> {
 
     await MY_MODEL(image);
     audio_play();
-    shownotification();
     FileImage(image)
         .resolve(const ImageConfiguration())
         .addListener(ImageStreamListener((ImageInfo info, bool _) {
@@ -170,23 +162,7 @@ class _MyAppState extends State<MyApp> {
       _confidence = recognitions[0]['confidence'].toString();
     });
   }
-  Future shownotification() async{
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
-      'CHANNEL_ID',   //Required for Android 8.0 or after
-      'CHANNEL_NAME', //Required for Android 8.0 or after
-      channelDescription: 'CHANNEL_DESCRIPTION', //Required for Android 8.0 or after
-    );
 
-    const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-        1,
-        "Traffic Sign Recognition using ML",
-        _label,
-        platformChannelSpecifics,
-        payload: 'data');
-  }
   Future audio_play() async {
     if(_label=="Speed limit (20km/h)") {
       player.setAsset('assets/20.mp3');
@@ -345,10 +321,8 @@ class _MyAppState extends State<MyApp> {
     else if(_label=="End no passing veh > 3.5 tons") {
       player.setAsset('assets/No passing for vehicles over 3.5 tons.mp3');
       player.play();
-
     }
   }
-
   onSelect(model) async {
     setState(() {
       _busy = true;
@@ -382,8 +356,8 @@ class _MyAppState extends State<MyApp> {
             itemBuilder: (context) {
               List<PopupMenuEntry<String>> menuEntries = [
                 const PopupMenuItem<String>(
-                  child: Text(pcmodel),
-                  value: pcmodel,
+                  child: Text(my_model),
+                  value: my_model,
                 ),
               ];
               return menuEntries;
